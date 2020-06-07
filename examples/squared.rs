@@ -14,5 +14,5 @@ fn main() {
         }
     }
 
-    canvas.to_ppm();
+    canvas.to_ppm("squared.ppm");
 }
