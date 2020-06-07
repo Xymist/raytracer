@@ -298,15 +298,53 @@ impl std::ops::Mul<M4> for M4 {
     }
 }
 
-impl<T> std::ops::Mul<T> for M4
-where
-    T: Into<M1_4>,
-{
+impl std::ops::Mul<M1_4> for M4 {
     type Output = M1_4;
 
-    fn mul(self, other: T) -> M1_4 {
+    fn mul(self, other: M1_4) -> M1_4 {
         let mut result = M1_4([[0.0; 1]; 4]);
-        let o = other.into();
+
+        for r in 0..4 {
+            result.write_idx(
+                r,
+                (self.0[r][0] * other.0[0][0])
+                    + (self.0[r][1] * other.0[1][0])
+                    + (self.0[r][2] * other.0[2][0])
+                    + (self.0[r][3] * other.0[3][0]),
+            )
+        }
+
+        result
+    }
+}
+
+impl std::ops::Mul<Vector3D<f64>> for M4 {
+    type Output = M1_4;
+
+    fn mul(self, other: Vector3D<f64>) -> M1_4 {
+        let mut result = M1_4([[0.0; 1]; 4]);
+        let o: M1_4 = other.into();
+
+        for r in 0..4 {
+            result.write_idx(
+                r,
+                (self.0[r][0] * o.0[0][0])
+                    + (self.0[r][1] * o.0[1][0])
+                    + (self.0[r][2] * o.0[2][0])
+                    + (self.0[r][3] * o.0[3][0]),
+            )
+        }
+
+        result
+    }
+}
+
+impl std::ops::Mul<Point3D<f64>> for M4 {
+    type Output = M1_4;
+
+    fn mul(self, other: Point3D<f64>) -> M1_4 {
+        let mut result = M1_4([[0.0; 1]; 4]);
+        let o: M1_4 = other.into();
 
         for r in 0..4 {
             result.write_idx(
@@ -498,5 +536,24 @@ mod test {
                 [-0.52256, -0.81391, -0.30075, 0.30639]
             ])
         )
+    }
+
+    #[test]
+    fn m4_matrix_inverse_multiplication() {
+        let m4_1 = M4([
+            [3.0, -9.0, 7.0, 3.0],
+            [3.0, -8.0, 2.0, -9.0],
+            [-4.0, 4.0, 4.0, 1.0],
+            [-6.0, 5.0, -1.0, 1.0],
+        ]);
+        let m4_2 = M4([
+            [8.0, 2.0, 2.0, 2.0],
+            [3.0, -1.0, 7.0, 0.0],
+            [7.0, 0.0, 5.0, 4.0],
+            [6.0, -2.0, 0.0, 5.0],
+        ]);
+
+        let mult = m4_1 * m4_2;
+        assert_eq!(mult * m4_2.inverse().unwrap(), m4_1)
     }
 }
