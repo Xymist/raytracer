@@ -99,6 +99,32 @@ impl std::ops::Mul<Vector3D<f64>> for Rotation {
     }
 }
 
+pub struct Shear(M4);
+
+impl Shear {
+    pub fn new(xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Self {
+        Shear(M4::shear(xy, xz, yx, yz, zx, zy))
+    }
+}
+
+impl std::ops::Mul<Point3D<f64>> for Shear {
+    type Output = Point3D<f64>;
+
+    fn mul(self, rhs: Self::Output) -> Self::Output {
+        let mtx = self.0 * rhs;
+        Point3D::new(mtx.idx(0), mtx.idx(1), mtx.idx(2))
+    }
+}
+
+impl std::ops::Mul<Vector3D<f64>> for Shear {
+    type Output = Vector3D<f64>;
+
+    fn mul(self, rhs: Self::Output) -> Self::Output {
+        let mtx = self.0 * rhs;
+        Vector3D::new(mtx.idx(0), mtx.idx(1), mtx.idx(2))
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -226,5 +252,53 @@ mod test {
         );
 
         assert_eq!(quarter_turn * p.clone(), Point3D::new(-1.0, 0.0, 0.0))
+    }
+
+    #[test]
+    fn shear_xy() {
+        let shear = Shear::new(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        let point = Point3D::new(2.0, 3.0, 4.0);
+
+        assert_eq!(shear * point, Point3D::new(5.0, 3.0, 4.0))
+    }
+
+    #[test]
+    fn shear_xz() {
+        let shear = Shear::new(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+        let point = Point3D::new(2.0, 3.0, 4.0);
+
+        assert_eq!(shear * point, Point3D::new(6.0, 3.0, 4.0))
+    }
+
+    #[test]
+    fn shear_yx() {
+        let shear = Shear::new(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+        let point = Point3D::new(2.0, 3.0, 4.0);
+
+        assert_eq!(shear * point, Point3D::new(2.0, 5.0, 4.0))
+    }
+
+    #[test]
+    fn shear_yz() {
+        let shear = Shear::new(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+        let point = Point3D::new(2.0, 3.0, 4.0);
+
+        assert_eq!(shear * point, Point3D::new(2.0, 7.0, 4.0))
+    }
+
+    #[test]
+    fn shear_zx() {
+        let shear = Shear::new(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+        let point = Point3D::new(2.0, 3.0, 4.0);
+
+        assert_eq!(shear * point, Point3D::new(2.0, 3.0, 6.0))
+    }
+
+    #[test]
+    fn shear_zy() {
+        let shear = Shear::new(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+        let point = Point3D::new(2.0, 3.0, 4.0);
+
+        assert_eq!(shear * point, Point3D::new(2.0, 3.0, 7.0))
     }
 }
