@@ -1,7 +1,22 @@
 use crate::descartes::{Point3D, Vector3D};
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone)]
 pub struct M2([[f64; 2]; 2]);
+
+impl PartialEq for M2 {
+    fn eq(&self, other: &M2) -> bool {
+        for r in 0..2 {
+            for c in 0..2 {
+                let lhs = (self.0[r][c] * 100000.0).round();
+                let rhs = (other.0[r][c] * 100000.0).round();
+                if lhs != rhs {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+}
 
 impl M2 {
     pub fn new() -> Self {
@@ -35,8 +50,23 @@ impl M2 {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone)]
 pub struct M3([[f64; 3]; 3]);
+
+impl PartialEq for M3 {
+    fn eq(&self, other: &M3) -> bool {
+        for r in 0..3 {
+            for c in 0..3 {
+                let lhs = (self.0[r][c] * 100000.0).round();
+                let rhs = (other.0[r][c] * 100000.0).round();
+                if lhs != rhs {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+}
 
 impl M3 {
     pub fn new() -> Self {
@@ -122,8 +152,23 @@ impl M3 {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone)]
 pub struct M4([[f64; 4]; 4]);
+
+impl PartialEq for M4 {
+    fn eq(&self, other: &M4) -> bool {
+        for r in 0..4 {
+            for c in 0..4 {
+                let lhs = (self.0[r][c] * 100000.0).round();
+                let rhs = (other.0[r][c] * 100000.0).round();
+                if lhs != rhs {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+}
 
 impl M4 {
     pub fn new() -> Self {
@@ -211,6 +256,22 @@ impl M4 {
             }
         }
         result
+    }
+
+    pub fn inverse(&self) -> Option<Self> {
+        let det = self.determinant();
+        if det == 0.0 {
+            return None;
+        }
+        let mut result = Self::new();
+
+        for r in 0..4 {
+            for c in 0..4 {
+                result.write_idx(c, r, self.cofactor(r, c) / self.determinant())
+            }
+        }
+
+        Some(result)
     }
 }
 
@@ -361,5 +422,81 @@ mod test {
         assert_eq!(m4.cofactor(0, 2), 210.0);
         assert_eq!(m4.cofactor(0, 3), 51.0);
         assert_eq!(m4.determinant(), -4071.0);
+    }
+
+    #[test]
+    fn m4_invertibility_check() {
+        let m4_invertable = M4([
+            [6.0, 4.0, 4.0, 4.0],
+            [5.0, 5.0, 7.0, 6.0],
+            [4.0, -9.0, 3.0, -7.0],
+            [9.0, 1.0, 7.0, -6.0],
+        ]);
+        let m4_uninvertable = M4([
+            [-4.0, 2.0, -2.0, -3.0],
+            [9.0, 6.0, 2.0, 6.0],
+            [0.0, -5.0, 1.0, -5.0],
+            [0.0, 0.0, 0.0, 0.0],
+        ]);
+        assert_eq!(m4_uninvertable.inverse(), None);
+        assert_ne!(m4_invertable.inverse(), None);
+    }
+
+    #[test]
+    fn m4_inverse() {
+        let m4_1 = M4([
+            [8.0, -5.0, 9.0, 2.0],
+            [7.0, 5.0, 6.0, 1.0],
+            [-6.0, 0.0, 9.0, 6.0],
+            [-3.0, 0.0, -9.0, -4.0],
+        ]);
+        let m4_1_inverted = M4([
+            [-0.15385, -0.15385, -0.28205, -0.53846],
+            [-0.07692, 0.12308, 0.02564, 0.03077],
+            [0.35897, 0.35897, 0.43590, 0.92308],
+            [-0.69231, -0.69231, -0.76923, -1.92308],
+        ]);
+        let m4_2 = M4([
+            [9.0, 3.0, 0.0, 9.0],
+            [-5.0, -2.0, -6.0, -3.0],
+            [-4.0, 9.0, 6.0, 4.0],
+            [-7.0, 6.0, 6.0, 2.0],
+        ]);
+        let m4_2_inverted = M4([
+            [-0.04074, -0.07778, 0.14444, -0.22222],
+            [-0.07778, 0.03333, 0.36667, -0.33333],
+            [-0.02901, -0.14630, -0.10926, 0.12963],
+            [0.17778, 0.06667, -0.26667, 0.33333],
+        ]);
+
+        assert_eq!(m4_1.inverse().unwrap(), m4_1_inverted);
+        assert_eq!(m4_2.inverse().unwrap(), m4_2_inverted);
+    }
+
+    #[test]
+    fn m4_inverse_detailed() {
+        let m4 = M4([
+            [-5.0, 2.0, 6.0, -8.0],
+            [1.0, -5.0, 1.0, 8.0],
+            [7.0, 7.0, -6.0, -7.0],
+            [1.0, -3.0, 7.0, 4.0],
+        ]);
+
+        let m4_inverted = m4.inverse().unwrap();
+
+        assert_eq!(m4.determinant(), 532.0);
+        assert_eq!(m4.cofactor(2, 3), -160.0);
+        assert_eq!(m4_inverted.idx(3, 2), -160.0 / 532.0);
+        assert_eq!(m4.cofactor(3, 2), 105.0);
+        assert_eq!(m4_inverted.idx(2, 3), 105.0 / 532.0);
+        assert_eq!(
+            m4_inverted,
+            M4([
+                [0.21805, 0.45113, 0.24060, -0.04511],
+                [-0.80827, -1.45677, -0.44361, 0.52068],
+                [-0.07895, -0.22368, -0.05263, 0.19737],
+                [-0.52256, -0.81391, -0.30075, 0.30639]
+            ])
+        )
     }
 }
