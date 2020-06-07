@@ -273,6 +273,49 @@ impl M4 {
 
         Some(result)
     }
+
+    pub fn translation(x: f64, y: f64, z: f64) -> Self {
+        let mut v = Self::identity();
+        v.write_idx(0, 3, x);
+        v.write_idx(1, 3, y);
+        v.write_idx(2, 3, z);
+        v
+    }
+
+    pub fn scaling(x: f64, y: f64, z: f64) -> Self {
+        let mut v = Self::identity();
+        v.write_idx(0, 0, x);
+        v.write_idx(1, 1, y);
+        v.write_idx(2, 2, z);
+        v
+    }
+
+    pub fn x_rotation(r: f64) -> Self {
+        M4([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, r.cos(), -r.sin(), 0.0],
+            [0.0, r.sin(), r.cos(), 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
+    }
+
+    pub fn y_rotation(r: f64) -> Self {
+        M4([
+            [r.cos(), 0.0, r.sin(), 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [-r.sin(), 0.0, r.cos(), 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
+    }
+
+    pub fn z_rotation(r: f64) -> Self {
+        M4([
+            [r.cos(), -r.sin(), 0.0, 0.0],
+            [r.sin(), r.cos(), 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
+    }
 }
 
 impl std::ops::Mul<M4> for M4 {

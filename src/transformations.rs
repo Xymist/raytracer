@@ -1,5 +1,6 @@
 use crate::descartes::{Point3D, Vector3D};
 use crate::matrix::M4;
+use std::f64::consts::PI;
 
 pub struct Translation(M4);
 
@@ -60,21 +61,41 @@ impl std::ops::Mul<Vector3D<f64>> for Scaling {
     }
 }
 
-impl M4 {
-    pub fn translation(x: f64, y: f64, z: f64) -> Self {
-        let mut v = Self::identity();
-        v.write_idx(0, 3, x);
-        v.write_idx(1, 3, y);
-        v.write_idx(2, 3, z);
-        v
+pub struct Rotation(M4);
+
+impl Rotation {
+    pub fn x(r: f64) -> Self {
+        Rotation(M4::x_rotation(r))
     }
 
-    pub fn scaling(x: f64, y: f64, z: f64) -> Self {
-        let mut v = Self::identity();
-        v.write_idx(0, 0, x);
-        v.write_idx(1, 1, y);
-        v.write_idx(2, 2, z);
-        v
+    pub fn y(r: f64) -> Self {
+        Rotation(M4::y_rotation(r))
+    }
+
+    pub fn z(r: f64) -> Self {
+        Rotation(M4::z_rotation(r))
+    }
+
+    pub fn inverse(self) -> Option<Self> {
+        self.0.inverse().map(|m| Rotation(m))
+    }
+}
+
+impl std::ops::Mul<Point3D<f64>> for Rotation {
+    type Output = Point3D<f64>;
+
+    fn mul(self, rhs: Self::Output) -> Self::Output {
+        let mtx = self.0 * rhs;
+        Point3D::new(mtx.idx(0), mtx.idx(1), mtx.idx(2))
+    }
+}
+
+impl std::ops::Mul<Vector3D<f64>> for Rotation {
+    type Output = Vector3D<f64>;
+
+    fn mul(self, rhs: Self::Output) -> Self::Output {
+        let mtx = self.0 * rhs;
+        Vector3D::new(mtx.idx(0), mtx.idx(1), mtx.idx(2))
     }
 }
 
@@ -152,5 +173,58 @@ mod test {
         let scaleable = Point3D::new(2.0, 3.0, 4.0);
 
         assert_eq!(scale * scaleable, Point3D::new(-2.0, 3.0, 4.0));
+    }
+
+    #[test]
+    fn x_rotate() {
+        let p = Point3D::new(0.0, 1.0, 0.0);
+        let eighth_turn = Rotation::x(PI / 4.0);
+        let quarter_turn = Rotation::x(PI / 2.0);
+
+        assert_eq!(
+            eighth_turn * p.clone(),
+            Point3D::new(0.0, 2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0)
+        );
+
+        assert_eq!(quarter_turn * p.clone(), Point3D::new(0.0, 0.0, 1.0))
+    }
+
+    #[test]
+    fn x_rotate_inverse() {
+        let p = Point3D::new(0.0, 1.0, 0.0);
+        let eighth_turn = Rotation::x(PI / 4.0).inverse().unwrap();
+
+        assert_eq!(
+            eighth_turn * p.clone(),
+            Point3D::new(0.0, 2.0_f64.sqrt() / 2.0, -(2.0_f64.sqrt() / 2.0))
+        );
+    }
+
+    #[test]
+    fn y_rotate() {
+        let p = Point3D::new(0.0, 0.0, 1.0);
+        let eighth_turn = Rotation::y(PI / 4.0);
+        let quarter_turn = Rotation::y(PI / 2.0);
+
+        assert_eq!(
+            eighth_turn * p.clone(),
+            Point3D::new(2.0_f64.sqrt() / 2.0, 0.0, 2.0_f64.sqrt() / 2.0)
+        );
+
+        assert_eq!(quarter_turn * p.clone(), Point3D::new(1.0, 0.0, 0.0))
+    }
+
+    #[test]
+    fn z_rotate() {
+        let p = Point3D::new(0.0, 1.0, 0.0);
+        let eighth_turn = Rotation::z(PI / 4.0);
+        let quarter_turn = Rotation::z(PI / 2.0);
+
+        assert_eq!(
+            eighth_turn * p.clone(),
+            Point3D::new(-2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0, 0.0)
+        );
+
+        assert_eq!(quarter_turn * p.clone(), Point3D::new(-1.0, 0.0, 0.0))
     }
 }

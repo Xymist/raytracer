@@ -1,8 +1,23 @@
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone)]
 pub struct Point3D<T> {
     x: T,
     y: T,
     z: T,
+}
+
+impl PartialEq for Point3D<f64> {
+    fn eq(&self, other: &Point3D<f64>) -> bool {
+        let lx = (self.x * 100000.0).round();
+        let rx = (other.x * 100000.0).round();
+        let ly = (self.y * 100000.0).round();
+        let ry = (other.y * 100000.0).round();
+        let lz = (self.z * 100000.0).round();
+        let rz = (other.z * 100000.0).round();
+        if lx != rx || ly != ry || lz != rz {
+            return false;
+        }
+        true
+    }
 }
 
 impl<T: Clone> Point3D<T> {
@@ -25,11 +40,26 @@ impl<T> Point3D<T> {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone)]
 pub struct Vector3D<T> {
     x: T,
     y: T,
     z: T,
+}
+
+impl PartialEq for Vector3D<f64> {
+    fn eq(&self, other: &Vector3D<f64>) -> bool {
+        let lx = (self.x * 100000.0).round();
+        let rx = (other.x * 100000.0).round();
+        let ly = (self.y * 100000.0).round();
+        let ry = (other.y * 100000.0).round();
+        let lz = (self.z * 100000.0).round();
+        let rz = (other.z * 100000.0).round();
+        if lx != rx || ly != ry || lz != rz {
+            return false;
+        }
+        true
+    }
 }
 
 impl<T: Clone> Vector3D<T> {
