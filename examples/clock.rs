@@ -2,7 +2,7 @@ use raytracer::canvas::Canvas;
 use raytracer::colour::Colour;
 use raytracer::descartes::{Point3D, Vector3D};
 use raytracer::matrix::M4;
-use raytracer::transformations::{Rotation, Scaling, Shear, Translation};
+use raytracer::transformations::Transformation;
 
 fn main() {
     let width = 640;
@@ -17,12 +17,12 @@ fn main() {
         red,
     );
 
-    let translation = Translation::new(width as f64 / 2.0, height as f64 / 2.0, 0.0);
+    let translation = Transformation::translation(width as f64 / 2.0, height as f64 / 2.0, 0.0);
 
     for i in 0..12 {
         let point = Point3D::new(0.0, 200.0, 0.0);
-        let rotation = Rotation::z(((2.0 * std::f64::consts::PI) / 12.0) * i as f64);
-        let num = translation * (rotation * point);
+        let rotation = Transformation::rotation_z(((2.0 * std::f64::consts::PI) / 12.0) * i as f64);
+        let num = translation.clone() * (rotation * point);
         write_blot(num, &mut canvas, blue)
     }
 
