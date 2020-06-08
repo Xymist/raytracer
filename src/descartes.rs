@@ -206,6 +206,14 @@ impl<T: std::ops::Div<Output = T> + Copy> std::ops::Div<T> for Vector3D<T> {
     }
 }
 
+impl<T: std::ops::Mul<Output = T> + Copy> std::ops::Mul<T> for Point3D<T> {
+    type Output = Self;
+
+    fn mul(self, scalar: T) -> Self::Output {
+        Point3D::new(self.x * scalar, self.y * scalar, self.z * scalar)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
