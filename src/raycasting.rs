@@ -33,7 +33,20 @@ pub enum Intersection {
 
 impl Intersection {
     fn new(sphere: Sphere, ray: Ray) -> Self {
-        unimplemented!()
+        let ro = ray.origin - Point3D::new(0.0, 0.0, 0.0);
+        let a = ray.direction.dot(ray.direction);
+        let b = 2.0 * ray.direction.dot(ro);
+        let c = ro.dot(ro) - 1.0;
+        let d = b.powi(2) - (4.0 * a * c);
+
+        if d < 0.0 {
+            return Intersection::Miss;
+        }
+
+        Intersection::Intersection(vec![
+            (-b - d.sqrt()) / (2.0 * a),
+            (-b + d.sqrt()) / (2.0 * a),
+        ])
     }
 }
 
@@ -84,5 +97,24 @@ mod test {
     }
 
     #[test]
-    fn internal_origin() {}
+    fn internal_origin() {
+        let p = Point3D::new(0.0, 0.0, 0.0);
+        let v = Vector3D::new(0.0, 0.0, 1.0);
+        let r = Ray::new(p, v);
+        let s = Sphere::new();
+        let i = Intersection::new(s, r);
+
+        assert_eq!(i, Intersection::Intersection(vec![-1.0, 1.0]))
+    }
+
+    #[test]
+    fn post_origin() {
+        let p = Point3D::new(0.0, 0.0, 5.0);
+        let v = Vector3D::new(0.0, 0.0, 1.0);
+        let r = Ray::new(p, v);
+        let s = Sphere::new();
+        let i = Intersection::new(s, r);
+
+        assert_eq!(i, Intersection::Intersection(vec![-6.0, -4.0]))
+    }
 }
