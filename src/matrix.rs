@@ -371,9 +371,9 @@ impl std::ops::Mul<M1_4> for M4 {
 }
 
 impl std::ops::Mul<Vector3D<f64>> for M4 {
-    type Output = M1_4;
+    type Output = Vector3D<f64>;
 
-    fn mul(self, other: Vector3D<f64>) -> M1_4 {
+    fn mul(self, other: Vector3D<f64>) -> Vector3D<f64> {
         let mut result = M1_4([[0.0; 1]; 4]);
         let o: M1_4 = other.into();
 
@@ -387,14 +387,14 @@ impl std::ops::Mul<Vector3D<f64>> for M4 {
             )
         }
 
-        result
+        Vector3D::new(result.idx(0), result.idx(1), result.idx(2))
     }
 }
 
 impl std::ops::Mul<Point3D<f64>> for M4 {
-    type Output = M1_4;
+    type Output = Point3D<f64>;
 
-    fn mul(self, other: Point3D<f64>) -> M1_4 {
+    fn mul(self, other: Point3D<f64>) -> Point3D<f64> {
         let mut result = M1_4([[0.0; 1]; 4]);
         let o: M1_4 = other.into();
 
@@ -408,7 +408,7 @@ impl std::ops::Mul<Point3D<f64>> for M4 {
             )
         }
 
-        result
+        Point3D::new(result.idx(0), result.idx(1), result.idx(2))
     }
 }
 

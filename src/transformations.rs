@@ -1,7 +1,7 @@
 use crate::descartes::{Point3D, Vector3D};
 use crate::matrix::M4;
-use std::f64::consts::PI;
 
+#[derive(Debug, Copy, Clone)]
 pub struct Translation(M4);
 
 impl Translation {
@@ -18,8 +18,7 @@ impl std::ops::Mul<Point3D<f64>> for Translation {
     type Output = Point3D<f64>;
 
     fn mul(self, rhs: Self::Output) -> Self::Output {
-        let mtx = self.0 * rhs;
-        Point3D::new(mtx.idx(0), mtx.idx(1), mtx.idx(2))
+        self.0 * rhs
     }
 }
 
@@ -31,6 +30,7 @@ impl std::ops::Mul<Vector3D<f64>> for Translation {
     }
 }
 
+#[derive(Debug, Copy, Clone)]
 pub struct Scaling(M4);
 
 impl Scaling {
@@ -47,8 +47,7 @@ impl std::ops::Mul<Point3D<f64>> for Scaling {
     type Output = Point3D<f64>;
 
     fn mul(self, rhs: Self::Output) -> Self::Output {
-        let mtx = self.0 * rhs;
-        Point3D::new(mtx.idx(0), mtx.idx(1), mtx.idx(2))
+        self.0 * rhs
     }
 }
 
@@ -56,11 +55,11 @@ impl std::ops::Mul<Vector3D<f64>> for Scaling {
     type Output = Vector3D<f64>;
 
     fn mul(self, rhs: Self::Output) -> Self::Output {
-        let mtx = self.0 * rhs;
-        Vector3D::new(mtx.idx(0), mtx.idx(1), mtx.idx(2))
+        self.0 * rhs
     }
 }
 
+#[derive(Debug, Copy, Clone)]
 pub struct Rotation(M4);
 
 impl Rotation {
@@ -85,8 +84,7 @@ impl std::ops::Mul<Point3D<f64>> for Rotation {
     type Output = Point3D<f64>;
 
     fn mul(self, rhs: Self::Output) -> Self::Output {
-        let mtx = self.0 * rhs;
-        Point3D::new(mtx.idx(0), mtx.idx(1), mtx.idx(2))
+        self.0 * rhs
     }
 }
 
@@ -94,11 +92,11 @@ impl std::ops::Mul<Vector3D<f64>> for Rotation {
     type Output = Vector3D<f64>;
 
     fn mul(self, rhs: Self::Output) -> Self::Output {
-        let mtx = self.0 * rhs;
-        Vector3D::new(mtx.idx(0), mtx.idx(1), mtx.idx(2))
+        self.0 * rhs
     }
 }
 
+#[derive(Debug, Copy, Clone)]
 pub struct Shear(M4);
 
 impl Shear {
@@ -111,8 +109,7 @@ impl std::ops::Mul<Point3D<f64>> for Shear {
     type Output = Point3D<f64>;
 
     fn mul(self, rhs: Self::Output) -> Self::Output {
-        let mtx = self.0 * rhs;
-        Point3D::new(mtx.idx(0), mtx.idx(1), mtx.idx(2))
+        self.0 * rhs
     }
 }
 
@@ -120,14 +117,14 @@ impl std::ops::Mul<Vector3D<f64>> for Shear {
     type Output = Vector3D<f64>;
 
     fn mul(self, rhs: Self::Output) -> Self::Output {
-        let mtx = self.0 * rhs;
-        Vector3D::new(mtx.idx(0), mtx.idx(1), mtx.idx(2))
+        self.0 * rhs
     }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::f64::consts::PI;
 
     #[test]
     fn translate_point() {
