@@ -31,6 +31,17 @@ impl Canvas {
         v
     }
 
+    pub fn u8_with_alpha(&self, alpha: u8) -> Vec<u8> {
+        let mut v = Vec::with_capacity((self.pixels.len() / 3) * 4);
+        for pixel in &self.pixels {
+            v.push(pixel.red_u8());
+            v.push(pixel.green_u8());
+            v.push(pixel.blue_u8());
+            v.push(alpha);
+        }
+        v
+    }
+
     pub fn to_ppm(self, filename: &str) -> () {
         // TODO: in theory this should be capped at 70 characters per
         // line, including spaces. Most modern implementations don't
