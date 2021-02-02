@@ -1,7 +1,6 @@
 use raytracer::canvas::Canvas;
 use raytracer::colour::Colour;
-use raytracer::descartes::{Point3D, Vector3D};
-use raytracer::matrix::M4;
+use raytracer::descartes::Point3D;
 use raytracer::transformations::Transformation;
 
 fn main() {

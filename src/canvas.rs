@@ -13,8 +13,44 @@ impl Canvas {
         }
     }
 
+    pub fn white(width: usize, height: usize) -> Self {
+        Canvas {
+            width,
+            pixels: vec![Colour::white(); width * height],
+        }
+    }
+
     pub fn write_pixel(&mut self, x: usize, y: usize, colour: Colour) {
         self.pixels[(y * self.width) + x] = colour
+    }
+
+    pub fn write_blob(&mut self, x: isize, y: isize, colour: Colour) {
+        let height = self.height();
+        let width = self.width;
+        [
+            (x, y - 2),
+            (x - 1, y - 1),
+            (x, y - 1),
+            (x + 1, y - 1),
+            (x - 2, y),
+            (x - 1, y),
+            (x, y),
+            (x + 1, y),
+            (x + 2, y),
+            (x - 1, y + 1),
+            (x, y + 1),
+            (x + 1, y + 1),
+            (x, y + 2),
+        ]
+        .iter()
+        .filter(|(xs, ys)| *xs > 0 && *xs < width as isize && *ys > 0 && *ys < height as isize)
+        .for_each(|(xs, ys)| {
+            self.write_pixel(*xs as usize, *ys as usize, colour);
+        });
+    }
+
+    pub fn height(&self) -> usize {
+        self.pixels.len() / self.width
     }
 
     pub fn get_pixel(&self, x: usize, y: usize) -> Colour {

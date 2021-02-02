@@ -3,10 +3,7 @@ use raytracer::canvas::Canvas;
 use raytracer::colour::Colour;
 use raytracer::descartes::Point3D;
 use std::io::prelude::*;
-use std::{
-    process::{Command, Stdio},
-    thread::sleep,
-};
+use std::process::{Command, Stdio};
 
 fn main() {
     let width = 640;
@@ -74,8 +71,7 @@ fn main() {
     stdin.write_all(&buff).unwrap();
     buff.clear();
 
-    sleep(std::time::Duration::from_millis(10000));
-    child.kill().unwrap();
+    child.wait().unwrap();
 }
 
 fn next_point(rng: &mut ThreadRng, point: Point3D<f64>) -> Point3D<f64> {

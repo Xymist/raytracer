@@ -1,4 +1,4 @@
-use rand::{distributions::Uniform, rngs::ThreadRng, Rng};
+use rand::{distributions::Uniform, Rng};
 use raytracer::canvas::Canvas;
 use raytracer::colour::Colour;
 use raytracer::descartes::Point3D;
